@@ -1051,35 +1051,21 @@ class Client:
         """
         return self._connection.get_sticker(id)
 
-    def get_all_channels(self) -> Generator[GuildChannel, None, None]:
+    def get_all_channels(self)-> int:
         """A generator that retrieves every :class:`.abc.GuildChannel` the client can 'access'.
-
-        This is equivalent to: ::
-
-            for guild in client.guilds:
-                for channel in guild.channels:
-                    yield channel
-
-        .. note::
-
-            Just because you receive a :class:`.abc.GuildChannel` does not mean that
-            you can communicate in said channel. :meth:`.abc.GuildChannel.permissions_for` should
-            be used for that.
-
-        Yields
-        ------
-        :class:`.abc.GuildChannel`
-            A channel the client can 'access'.
+        counting = slow -> longer blocks
         """
+        fetch = sum(chain([len(_.channels) for _ in self.guilds]))
+        yield = fetch
+        #for guild in self.guilds:
+           # yield from guild.channels
 
-        for guild in self.guilds:
-            yield from guild.channels
-
-    def get_all_members(self):
+    def get_all_members(self)-> int:
         """Made substantially faster by avoiding the generator at all costs
         counting things is an insubstantial amount of work
+        why iterate through members when we can iterate through membercounts :v
         """
-        fetch = sum(chain([len(_.members) for _ in self.guilds]))
+        fetch = sum(chain(_.member_count for _ in self.guilds))
         yield fetch
         #for guild in self.guilds:
             #yield from guild.members
