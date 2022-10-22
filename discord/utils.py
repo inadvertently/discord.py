@@ -126,37 +126,27 @@ class _cached_property:
 
         return value
 
-
 if TYPE_CHECKING:
     from functools import cached_property as cached_property
-
     from typing_extensions import ParamSpec, Self, TypeGuard
-
     from .permissions import Permissions
     from .abc import Snowflake
     from .invite import Invite
     from .template import Template
-
     class _RequestLike(Protocol):
         headers: Mapping[str, Any]
-
     P = ParamSpec('P')
-
     MaybeAwaitableFunc = Callable[P, 'MaybeAwaitable[T]']
-
     _SnowflakeListBase = array.array[int]
 
 else:
     cached_property = _cached_property
     _SnowflakeListBase = array.array
-
-
 T = TypeVar('T')
 T_co = TypeVar('T_co', covariant=True)
 _Iter = Union[Iterable[T], AsyncIterable[T]]
 Coro = Coroutine[Any, Any, T]
 MaybeAwaitable = Union[T, Awaitable[T]]
-
 
 class CachedSlotProperty(Generic[T, T_co]):
     def __init__(self, name: str, function: Callable[[T], T_co]) -> None:
@@ -611,6 +601,11 @@ def _get_mime_type_for_image(data: bytes):
     else:
         raise ValueError('Unsupported image type given')
 
+#refactored for speed (requires linux distros)
+def _to_json(obj: Any) -> str:
+    return orjson.dumps(obj).decode('utf-8')
+
+_from_json = orjson.loads  
 
 def _bytes_to_base64_data(data: bytes) -> str:
     fmt = 'data:{mime};base64,{data}'
@@ -618,15 +613,8 @@ def _bytes_to_base64_data(data: bytes) -> str:
     b64 = b64encode(data).decode('ascii')
     return fmt.format(mime=mime, data=b64)
 
-
 def _is_submodule(parent: str, child: str) -> bool:
     return parent == child or child.startswith(parent + '.')
-
-#refactored (requires linux distros)
-def _to_json(obj: Any) -> str:
-    return orjson.dumps(obj).decode('utf-8')
-
-_from_json = orjson.loads  
 
 def _parse_ratelimit_header(request: Any, *, use_clock: bool = False) -> float:
     reset_after: Optional[str] = request.headers.get('X-Ratelimit-Reset-After')
@@ -684,11 +672,9 @@ def compute_timedelta(dt: datetime.datetime) -> float:
     now = datetime.datetime.now(datetime.timezone.utc)
     return max((dt - now).total_seconds(), 0)
 
-
 @overload
 async def sleep_until(when: datetime.datetime, result: T) -> T:
     ...
-
 
 @overload
 async def sleep_until(when: datetime.datetime) -> None:
