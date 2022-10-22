@@ -1056,7 +1056,7 @@ class Client:
         counting = slow -> longer blocks
         """
         fetch = sum(chain([len(_.channels) for _ in self.guilds]))
-        yield = fetch
+        yield fetch
         #for guild in self.guilds:
            # yield from guild.channels
 
