@@ -1051,7 +1051,7 @@ class Client:
         """
         return self._connection.get_sticker(id)
 
-    def get_all_channels(self)-> int:
+    def get_all_channels(self):
         """A generator that retrieves every :class:`.abc.GuildChannel` the client can 'access'.
         counting = slow -> longer blocks
         """
@@ -1060,7 +1060,7 @@ class Client:
         #for guild in self.guilds:
            # yield from guild.channels
 
-    def get_all_members(self)-> int:
+    def get_all_members(self):
         """Made substantially faster by avoiding the generator at all costs
         counting things is an insubstantial amount of work
         why iterate through members when we can iterate through membercounts :v
