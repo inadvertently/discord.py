@@ -23,30 +23,12 @@ DEALINGS IN THE SOFTWARE.
 """
 
 from __future__ import annotations
-
 import asyncio
 import datetime
 from itertools import chain
 import logging
-from typing import (
-    Any,
-    AsyncIterator,
-    Callable,
-    Coroutine,
-    Dict,
-    Generator,
-    List,
-    Optional,
-    Sequence,
-    TYPE_CHECKING,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
-
+from typing import (Any,AsyncIterator,Callable,Coroutine,Dict,List,Optional,Sequence,TYPE_CHECKING,Tuple,Type,TypeVar,Union,)
 import aiohttp
-
 from .user import User, ClientUser
 from .invite import Invite
 from .template import Template
@@ -83,19 +65,14 @@ if TYPE_CHECKING:
     from .guild import GuildChannel
     from .channel import DMChannel
     from .message import Message
-    from .member import Member
     from .voice_client import VoiceProtocol
 
 # fmt: off
-__all__ = (
-    'Client',
-)
+__all__ = ('Client',)
 # fmt: on
 
 Coro = TypeVar('Coro', bound=Callable[..., Coroutine[Any, Any, Any]])
-
 _log = logging.getLogger(__name__)
-
 
 class _LoopSentinel:
     __slots__ = ()
@@ -107,10 +84,7 @@ class _LoopSentinel:
             'using asynchronous initialisation hooks such as Client.setup_hook'
         )
         raise AttributeError(msg)
-
-
 _loop: Any = _LoopSentinel()
-
 
 class Client:
     r"""Represents a client connection that connects to Discord.
@@ -233,19 +207,11 @@ class Client:
         unsync_clock: bool = options.pop('assume_unsync_clock', True)
         http_trace: Optional[aiohttp.TraceConfig] = options.pop('http_trace', None)
         max_ratelimit_timeout: Optional[float] = options.pop('max_ratelimit_timeout', None)
-        self.http: HTTPClient = HTTPClient(
-            self.loop,
-            proxy=proxy,
-            proxy_auth=proxy_auth,
-            unsync_clock=unsync_clock,
-            http_trace=http_trace,
-            max_ratelimit_timeout=max_ratelimit_timeout,
-        )
+        self.http: HTTPClient = HTTPClient(self.loop,proxy=proxy,proxy_auth=proxy_auth,unsync_clock=unsync_clock,http_trace=http_trace,max_ratelimit_timeout=max_ratelimit_timeout,)
 
         self._handlers: Dict[str, Callable[..., None]] = {
             'ready': self._handle_ready,
         }
-
         self._hooks: Dict[str, Callable[..., Coroutine[Any, Any, Any]]] = {
             'before_identify': self._call_before_identify_hook,
         }
@@ -267,15 +233,9 @@ class Client:
         await self._async_setup_hook()
         return self
 
-    async def __aexit__(
-        self,
-        exc_type: Optional[Type[BaseException]],
-        exc_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> None:
+    async def __aexit__(self,exc_type: Optional[Type[BaseException]],exc_value: Optional[BaseException],traceback: Optional[TracebackType],) -> None:
         if not self.is_closed():
             await self.close()
-
     # internals
 
     def _get_websocket(self, guild_id: Optional[int] = None, *, shard_id: Optional[int] = None) -> DiscordWebSocket:
@@ -294,7 +254,7 @@ class Client:
         This could be referred to as the Discord WebSocket protocol latency.
         """
         ws = self.ws
-        return float('nan') if not ws else ws.latency
+        return float("nan") if not ws else ws.latency
 
     def is_ws_ratelimited(self) -> bool:
         """:class:`bool`: Whether the websocket is currently rate limited.
@@ -428,7 +388,7 @@ class Client:
         return self.loop.create_task(wrapped, name=f'discord.py: {event_name}')
 
     def dispatch(self, event: str, /, *args: Any, **kwargs: Any) -> None:
-        _log.debug('Dispatching event %s', event)
+        _log.debug("Dispatching event %s", event)
         method = 'on_' + event
 
         listeners = self._listeners.get(event)
@@ -481,7 +441,7 @@ class Client:
             ``event_method`` parameter is now positional-only
             and instead of writing to ``sys.stderr`` it logs instead.
         """
-        _log.exception('Ignoring exception in %s', event_method)
+        _log.exception("Ignoring exception in %s", event_method)
 
     # hooks
 
@@ -569,8 +529,7 @@ class Client:
             passing status code.
         """
 
-        _log.info('logging in using static token')
-
+        _log.info("[HIT BOUNDS] -> Logging in with static token")
         if self.loop is _loop:
             await self._async_setup_hook()
 
@@ -627,22 +586,14 @@ class Client:
                 while True:
                     await self.ws.poll_event()
             except ReconnectWebSocket as e:
-                _log.debug('Got a request to %s the websocket.', e.op)
-                self.dispatch('disconnect')
+                _log.debug("[HIT BOUNDS] -> Request to %s the websocket.", e.op)
+                self.dispatch("disconnect")
                 ws_params.update(sequence=self.ws.sequence, resume=e.resume, session=self.ws.session_id)
                 if e.resume:
                     ws_params['gateway'] = self.ws.gateway
                 continue
-            except (
-                OSError,
-                HTTPException,
-                GatewayNotFound,
-                ConnectionClosed,
-                aiohttp.ClientError,
-                asyncio.TimeoutError,
-            ) as exc:
-
-                self.dispatch('disconnect')
+            except (OSError,HTTPException,GatewayNotFound,ConnectionClosed,aiohttp.ClientError,asyncio.TimeoutError,) as exc:
+                self.dispatch("disconnect", None)
                 if not reconnect:
                     await self.close()
                     if isinstance(exc, ConnectionClosed) and exc.code == 1000:
@@ -1066,7 +1017,7 @@ class Client:
         why iterate through members when we can iterate through membercounts :v
         """
         fetch = sum(chain(_.member_count for _ in self.guilds))
-        yield fetch
+        yield fetch 
         #for guild in self.guilds:
             #yield from guild.members
 
