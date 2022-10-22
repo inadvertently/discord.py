@@ -1075,7 +1075,7 @@ class Client:
         for guild in self.guilds:
             yield from guild.channels
 
-    def get_all_members(self) -> int:
+    def get_all_members(self):
         """Made substantially faster by avoiding the generator at all costs
         counting things is an insubstantial amount of work
         """
