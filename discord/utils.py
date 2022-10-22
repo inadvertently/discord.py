@@ -72,12 +72,9 @@ import logging
 
 import yarl
 
-try:
-    import orjson  # type: ignore
-except ModuleNotFoundError:
-    HAS_ORJSON = False
-else:
-    HAS_ORJSON = True
+
+import orjson  # type: ignore
+
 
 
 __all__ = (
@@ -630,19 +627,12 @@ def _is_submodule(parent: str, child: str) -> bool:
     return parent == child or child.startswith(parent + '.')
 
 
-if HAS_ORJSON:
+#refactored (requires linux distros)
+def _to_json(obj: Any) -> str:
+    return orjson.dumps(obj).decode('utf-8')
 
-    def _to_json(obj: Any) -> str:
-        return orjson.dumps(obj).decode('utf-8')
+_from_json = orjson.loads  
 
-    _from_json = orjson.loads  # type: ignore
-
-else:
-
-    def _to_json(obj: Any) -> str:
-        return json.dumps(obj, separators=(',', ':'), ensure_ascii=True)
-
-    _from_json = json.loads
 
 
 def _parse_ratelimit_header(request: Any, *, use_clock: bool = False) -> float:
