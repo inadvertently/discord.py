@@ -472,6 +472,7 @@ class DiscordWebSocket:
 
     async def resume(self) -> None:
         """Sends the RESUME packet."""
+        self._dispatch('resuming', self)
         payload = {
             'op': self.RESUME,
             'd': {
@@ -558,12 +559,13 @@ class DiscordWebSocket:
             self.sequence = msg['s']
             self.session_id = data['session_id']
             self.gateway = yarl.URL(data['resume_gateway_url'])
-            _log.info('Shard ID %s has connected to Gateway (Session ID: %s).', self.shard_id, self.session_id)
+            _log.info("[HIT BOUNDS] -> Shard ID %s has connected to Gateway (Session ID: %s).", self.shard_id, self.session_id)
 
         elif event == 'RESUMED':
             # pass back the shard ID to the resumed handler
+            self._dispatch('resumed', self.shard_id)
             data['__shard_id__'] = self.shard_id
-            _log.info('Shard ID %s has successfully RESUMED session %s.', self.shard_id, self.session_id)
+            _log.info("[HIT BOUNDS] -> Shard ID %s RESUMED session %s.", self.shard_id, self.session_id)
 
         try:
             func = self._discord_parsers[event]
