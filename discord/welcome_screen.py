@@ -30,17 +30,11 @@ from typing import List, Optional, TYPE_CHECKING, Union
 from .utils import _get_as_snowflake, get, MISSING
 from .partial_emoji import _EmojiTag
 
-__all__ = (
-    'WelcomeChannel',
-    'WelcomeScreen',
-)
+__all__ = ('WelcomeChannel','WelcomeScreen',)
 
 if TYPE_CHECKING:
     from typing_extensions import Self
-    from .types.welcome_screen import (
-        WelcomeScreen as WelcomeScreenPayload,
-        WelcomeScreenChannel as WelcomeScreenChannelPayload,
-    )
+    from .types.welcome_screen import (WelcomeScreen as WelcomeScreenPayload,WelcomeScreenChannel as WelcomeScreenChannelPayload,)
     from .abc import Snowflake
     from .guild import Guild
     from .partial_emoji import PartialEmoji

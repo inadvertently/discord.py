@@ -23,9 +23,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 from __future__ import annotations
-
 from typing import List, Optional, TYPE_CHECKING, Union
-
 from .utils import snowflake_time, _get_as_snowflake, resolve_invite
 from .user import BaseUser
 from .activity import BaseActivity, Spotify, create_activity
@@ -37,15 +35,9 @@ if TYPE_CHECKING:
     from .state import ConnectionState
     from .types.widget import (
         WidgetMember as WidgetMemberPayload,
-        Widget as WidgetPayload,
-    )
+        Widget as WidgetPayload)
 
-__all__ = (
-    'WidgetChannel',
-    'WidgetMember',
-    'Widget',
-)
-
+__all__ = ('WidgetChannel','WidgetMember','Widget',)
 
 class WidgetChannel:
     """Represents a "partial" widget channel.
@@ -101,7 +93,6 @@ class WidgetChannel:
         """:class:`datetime.datetime`: Returns the channel's creation time in UTC."""
         return snowflake_time(self.id)
 
-
 class WidgetMember(BaseUser):
     """Represents a "partial" member of the widget's guild.
 
@@ -151,49 +142,28 @@ class WidgetMember(BaseUser):
         Which channel the member is connected to.
     """
 
-    __slots__ = (
-        'status',
-        'nick',
-        'avatar',
-        'activity',
-        'deafened',
-        'suppress',
-        'muted',
-        'connected_channel',
-    )
-
+    __slots__ = ('status','nick','avatar','activity','deafened','suppress','muted','connected_channel',)
     if TYPE_CHECKING:
         activity: Optional[Union[BaseActivity, Spotify]]
 
-    def __init__(
-        self,
-        *,
-        state: ConnectionState,
-        data: WidgetMemberPayload,
-        connected_channel: Optional[WidgetChannel] = None,
-    ) -> None:
+    def __init__(self,*,state: ConnectionState,data: WidgetMemberPayload,connected_channel: Optional[WidgetChannel] = None,) -> None:
         super().__init__(state=state, data=data)
         self.nick: Optional[str] = data.get('nick')
         self.status: Status = try_enum(Status, data.get('status'))
         self.deafened: Optional[bool] = data.get('deaf', False) or data.get('self_deaf', False)
         self.muted: Optional[bool] = data.get('mute', False) or data.get('self_mute', False)
         self.suppress: Optional[bool] = data.get('suppress', False)
-
         try:
             game = data['game']
         except KeyError:
             activity = None
         else:
             activity = create_activity(game, state)
-
         self.activity: Optional[Union[BaseActivity, Spotify]] = activity
-
         self.connected_channel: Optional[WidgetChannel] = connected_channel
 
     def __repr__(self) -> str:
-        return (
-            f"<WidgetMember name={self.name!r} discriminator={self.discriminator!r}" f" bot={self.bot} nick={self.nick!r}>"
-        )
+        return (f"<WidgetMember name={self.name!r} discriminator={self.discriminator!r}" f" bot={self.bot} nick={self.nick!r}>")
 
     @property
     def display_name(self) -> str:
@@ -290,6 +260,9 @@ class Widget:
     @property
     def json_url(self) -> str:
         """:class:`str`: The JSON URL of the widget."""
+        #returns first 100 members, instant invite
+        #avatars and presences
+        #cool PIL grid with online avatars idea
         return f"https://discord.com/api/guilds/{self.id}/widget.json"
 
     @property
