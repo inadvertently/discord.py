@@ -603,7 +603,8 @@ class ConnectionState:
         self._ready_task = asyncio.create_task(self._delay_ready())
 
     def parse_resumed(self, data: gw.ResumedEvent) -> None:
-        self.dispatch('resumed')
+        #self.dispatch('resumed')
+        pass
 
     def parse_message_create(self, data: gw.MessageCreateEvent) -> None:
         channel, _ = self._get_guild_channel(data)
