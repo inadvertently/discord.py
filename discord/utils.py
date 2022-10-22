@@ -62,18 +62,14 @@ import functools
 from inspect import isawaitable as _isawaitable, signature as _signature
 from operator import attrgetter
 from urllib.parse import urlencode
-import json
 import re
 import os
 import sys
 import types
 import warnings
 import logging
-
 import yarl
-
-
-import orjson  # type: ignore
+import orjson
 
 
 
@@ -626,14 +622,11 @@ def _bytes_to_base64_data(data: bytes) -> str:
 def _is_submodule(parent: str, child: str) -> bool:
     return parent == child or child.startswith(parent + '.')
 
-
 #refactored (requires linux distros)
 def _to_json(obj: Any) -> str:
     return orjson.dumps(obj).decode('utf-8')
 
 _from_json = orjson.loads  
-
-
 
 def _parse_ratelimit_header(request: Any, *, use_clock: bool = False) -> float:
     reset_after: Optional[str] = request.headers.get('X-Ratelimit-Reset-After')
